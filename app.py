@@ -99,6 +99,21 @@ def main():
     
     # Add demand component controls
     st.sidebar.subheader("Demand Components")
+    
+    # Display demand estimation formula
+    st.sidebar.markdown("### Demand Estimation Formula")
+    formula = r"""
+    $D_{ij} = \begin{cases}
+    1 & \text{if all components disabled} \\
+    \prod_{k} C_k & \text{otherwise}
+    \end{cases}$
+    
+    where components $C_k$ are:
+    """
+    st.sidebar.markdown(formula)
+    
+    component_formulas = []
+    
     if 'demand_components' not in st.session_state:
         st.session_state.demand_components = {
             'population': True,
@@ -107,12 +122,30 @@ def main():
             'time': True
         }
     
-    st.session_state.demand_components.update({
-        'population': st.sidebar.checkbox("Population Factor", value=st.session_state.demand_components['population']),
-        'income': st.sidebar.checkbox("Income Factor (Logistic)", value=st.session_state.demand_components['income']),
-        'height': st.sidebar.checkbox("Building Height Factor", value=st.session_state.demand_components['height']),
-        'time': st.sidebar.checkbox("Time-based Factor", value=st.session_state.demand_components['time'])
-    })
+    # Population component
+    st.session_state.demand_components['population'] = st.sidebar.checkbox("Population Factor", value=st.session_state.demand_components['population'])
+    if st.session_state.demand_components['population']:
+        component_formulas.append(r"$C_{pop} = P^{\alpha}$ (Population)")
+    
+    # Income component with logistic function
+    st.session_state.demand_components['income'] = st.sidebar.checkbox("Income Factor (Logistic)", value=st.session_state.demand_components['income'])
+    if st.session_state.demand_components['income']:
+        component_formulas.append(r"$C_{inc} = \left(\frac{1}{1 + e^{-\beta(I-I_0)}}\right)$ (Income)")
+    
+    # Height component
+    st.session_state.demand_components['height'] = st.sidebar.checkbox("Building Height Factor", value=st.session_state.demand_components['height'])
+    if st.session_state.demand_components['height']:
+        component_formulas.append(r"$C_{h} = H^{\epsilon}$ (Height)")
+    
+    # Time component
+    st.session_state.demand_components['time'] = st.sidebar.checkbox("Time-based Factor", value=st.session_state.demand_components['time'])
+    if st.session_state.demand_components['time']:
+        component_formulas.append(r"$C_t = \begin{cases} 1.5 & \text{peak hours} \\ 1.0 & \text{otherwise} \end{cases}$ (Time)")
+    
+    if component_formulas:
+        st.sidebar.markdown("Selected components:")
+        for formula in component_formulas:
+            st.sidebar.markdown(formula)
     
     # Add time simulation controls if time component is enabled
     if 'current_hour' not in st.session_state:
