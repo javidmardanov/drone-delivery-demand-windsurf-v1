@@ -198,23 +198,7 @@ def main():
         k_neighbors = st.slider("Number of neighbors (k)", 3, 10, 5,
                               help="Number of neighbors for height estimation")
         
-        # Display main equations
-        st.header("Model Equations")
-        
-        # Demand estimation equation
-        st.subheader("Demand Estimation")
-        st.latex(r"""
-        D_{ij} = \frac{P_i^\beta}{d_{ij}^\alpha}
-        """)
-        st.markdown("""
-        Where:
-        - D_{ij}: Demand between points i and j
-        - P_i: Population at point i
-        - d_{ij}: Distance between i and j
-        - α: Distance decay parameter
-        - β: Population scaling parameter
-        """)
-        
+                
         # Distribution selection
         st.subheader("Delivery Distribution")
         distribution = st.selectbox(
